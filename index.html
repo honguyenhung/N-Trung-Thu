@@ -14,6 +14,7 @@
       font-family: "Mali", cursive;
       background: #060614; overflow: hidden;
     }
+
     .stage { position: relative; min-height: 100vh; overflow: hidden; }
     canvas#starfield { display:block; width:100%; height:100%; }
 
@@ -34,7 +35,7 @@
     @keyframes swing{ 0%{transform:rotate(-5deg)} 50%{transform:rotate(5deg)} 100%{transform:rotate(-5deg)} }
     .swing{ animation: swing 2s ease-in-out infinite; }
 
-    /* Popup lời chúc căn giữa + hiệu ứng */
+    /* Popup lời chúc */
     #wish-popup{
       position: fixed; top: 55%; left: 50%;
       transform: translate(-50%,-50%);
@@ -58,10 +59,26 @@
     .show{ display:block; animation: slideIn .8s ease forwards; }
     .hide{ animation: slideOut .8s ease forwards; }
 
+    /* Hint */
     #hint{
       position: fixed; bottom:80px; left:50%; transform:translateX(-50%);
       color:#ffa722; font-size:24px; font-weight:700; opacity:0; transition:.5s;
       text-shadow:0 0 10px #ff8a50; z-index: 8;
+    }
+
+    /* Lời chúc cuối "Ngủ ngon" */
+    #goodnight {
+      position: fixed;
+      top: 60%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2rem;
+      color: #ffb347;
+      text-shadow: 0 0 20px #ffd180, 0 0 40px #ff8a50;
+      opacity: 0;
+      z-index: 9999;
+      font-weight: 700;
+      transition: opacity 1.2s ease;
     }
   </style>
 </head>
@@ -76,6 +93,9 @@
 
     <!-- Popup lời chúc -->
     <div id="wish-popup" role="dialog" aria-live="polite"></div>
+
+    <!-- Lời chúc kết -->
+    <div id="goodnight">💤 Chúc bạn yêu ngủ ngon nhaaa 💖</div>
 
     <div id="hint">Chạm vào đèn trời</div>
 
@@ -113,10 +133,9 @@
     const lanternContainer = document.getElementById("lantern-container");
     function createLantern(){
       const lantern = document.createElement("img");
-      lantern.src = "./den.png"; // đặt file den.png cạnh index.html
+      lantern.src = "./den.png"; // file đèn lồng
       lantern.className = "lantern swing";
 
-      // 3 lớp sâu - kích thước, thời lượng, độ mờ khác nhau
       const layer = Math.floor(Math.random()*3)+1;
       let size=40, duration=10000, opacity=.8;
       if(layer===1){ size=20+Math.random()*20; duration=14000+Math.random()*5000; opacity=.5; }
@@ -129,8 +148,8 @@
       lantern.style.opacity = opacity;
       lanternContainer.appendChild(lantern);
 
-      const drift = Math.random()*140 - 70;  // trôi ngang
-      const up = 120 + Math.random()*40;     // bay lên cao
+      const drift = Math.random()*140 - 70;
+      const up = 120 + Math.random()*40;
       lantern.animate(
         [{transform:"translate(0,0)", opacity:opacity},{transform:`translate(${drift}px, -${up}vh)`, opacity:0}],
         {duration, easing:"linear", fill:"forwards"}
@@ -139,7 +158,7 @@
     }
     setInterval(createLantern, 500);
 
-    // ===== Nhạc nền (chạm để phát) =====
+    // ===== Nhạc nền =====
     const bg = document.getElementById("bg-music");
     const hint = document.getElementById("hint");
     let musicStarted=false;
@@ -154,7 +173,7 @@
       document.removeEventListener("pointerdown", startMusicOnce);
     });
 
-    // ===== Lời chúc: 2s/câu, hết thì dừng =====
+    // ===== Lời chúc chính =====
     const wishes = [
       "Chúc bạn Nhi Trung Thu ấm áp, hạnh phúc!",
       "Chúc gia đình bạn đoàn viên, vui vẻ!",
@@ -163,18 +182,24 @@
       "Mong ước thành hiện thực nhé!"
     ];
     const popup = document.getElementById("wish-popup");
+    const goodnight = document.getElementById("goodnight");
     let idx = 0, timer = null;
 
     function showNextWish(){
       if(idx >= wishes.length){
-        // Ẩn dần popup rồi dừng hẳn
+        // Ẩn popup và chuẩn bị hiện "Ngủ ngon"
         popup.classList.remove("show");
         popup.classList.add("hide");
-        popup.addEventListener("animationend", ()=>{ popup.style.display="none"; }, {once:true});
+        popup.addEventListener("animationend", ()=>{
+          popup.style.display="none";
+          // chờ 4s rồi hiện dòng chúc ngủ ngon
+          setTimeout(()=>{
+            goodnight.style.opacity = "1";
+          }, 4000);
+        }, {once:true});
         clearInterval(timer);
         return;
       }
-      // chuyển cảnh: out -> đổi text -> in
       popup.classList.remove("hide");
       if(popup.textContent){
         popup.classList.add("hide");
@@ -191,13 +216,12 @@
       }
     }
 
-    // Bắt đầu sau 2s, rồi 2s đổi 1 câu, đến hết thì dừng
     setTimeout(()=>{
-      showNextWish();                   // câu đầu
+      showNextWish();
       timer = setInterval(showNextWish, 2000);
     }, 2000);
 
-    // Hint xuất hiện rồi mờ
+    // Hint xuất hiện rồi mờ dần
     setTimeout(()=>{ hint.style.opacity="1"; setTimeout(()=>hint.style.opacity="0", 5000); }, 1000);
   </script>
 </body>
