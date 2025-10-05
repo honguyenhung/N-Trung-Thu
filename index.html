@@ -7,117 +7,61 @@
   <title>Cho nè</title>
   <link href="https://fonts.googleapis.com/css2?family=Mali:wght@500;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --accent: #ff7f50;
-      --accent-2: #ff5722;
-    }
+    :root { --accent:#ff7f50; --accent-2:#ff5722; }
 
-    html,
-    body {
-      height: 100%;
-      margin: 0;
+    html, body {
+      height: 100%; margin: 0;
       font-family: "Mali", cursive;
-      background: #060614;
-      overflow: hidden;
+      background: #060614; overflow: hidden;
     }
-
-    .stage {
-      position: relative;
-      min-height: 100vh;
-      overflow: hidden;
-    }
-
-    canvas#starfield {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
+    .stage { position: relative; min-height: 100vh; overflow: hidden; }
+    canvas#starfield { display:block; width:100%; height:100%; }
 
     .moon {
-      position: absolute;
-      top: 60px;
-      right: 100px;
-      width: 160px;
-      height: 160px;
-      background: radial-gradient(circle at 30% 30%, #fff, #f8f8f8 70%, #e0e0e0 100%);
-      border-radius: 50%;
-      box-shadow: 0 0 60px rgba(255, 255, 220, 0.8);
-      z-index: 10;
+      position: absolute; top: 60px; right: 100px;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff 0%, #f8f8f8 70%, #e0e0e0 100%);
+      box-shadow: 0 0 60px rgba(255,255,220,.8); z-index: 10;
     }
+    @media (max-width:600px){ .moon{top:40px; right:14px; width:70px; height:70px;} }
 
-    #wish-popup {
-      position: fixed;
-      top: 55%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(255, 255, 255, 0.96);
-      color: #ff8d22;
-      padding: 25px 35px;
-      border-radius: 18px;
-      font-size: 1.8rem;
-      font-weight: 700;
-      display: none;
-      z-index: 9999;
-      box-shadow: 0 0 25px #ff8a50, 0 0 35px #ffd180;
-      text-align: center;
+    /* Đèn lồng */
+    #lantern-container{
+      position: fixed; inset:0;
+      pointer-events: none; overflow: hidden; z-index: 9;
+    }
+    .lantern{ position:absolute; width:40px; user-select:none; pointer-events:auto; }
+    @keyframes swing{ 0%{transform:rotate(-5deg)} 50%{transform:rotate(5deg)} 100%{transform:rotate(-5deg)} }
+    .swing{ animation: swing 2s ease-in-out infinite; }
+
+    /* Popup lời chúc căn giữa + hiệu ứng */
+    #wish-popup{
+      position: fixed; top: 55%; left: 50%;
+      transform: translate(-50%,-50%);
+      background: rgba(255,255,255,.96);
+      color:#ff8d22; padding: 25px 35px; border-radius: 18px;
+      font-size:1.8rem; font-weight:700; display:none; z-index:9999;
+      text-align:center; white-space:nowrap;
       text-shadow: 0 0 12px #ffd180;
-      white-space: nowrap;
+      box-shadow: 0 0 25px #ff8a50, 0 0 35px #ffd180;
     }
+    @media (max-width:600px){ #wish-popup{font-size:1.2rem; padding:16px 20px; white-space:normal; max-width:85%;} }
 
-    /* Hiệu ứng xuất hiện và biến mất */
-    @keyframes slideIn {
-      0% {
-        opacity: 0;
-        transform: translate(-50%, -30px);
-      }
-
-      100% {
-        opacity: 1;
-        transform: translate(-50%, -50%);
-      }
+    @keyframes slideIn{
+      0%{opacity:0; transform: translate(-50%,-30px);}
+      100%{opacity:1; transform: translate(-50%,-50%);}
     }
-
-    @keyframes slideOut {
-      0% {
-        opacity: 1;
-        transform: translate(-50%, -50%);
-      }
-
-      100% {
-        opacity: 0;
-        transform: translate(-50%, -70px);
-      }
+    @keyframes slideOut{
+      0%{opacity:1; transform: translate(-50%,-50%);}
+      100%{opacity:0; transform: translate(-50%,-70px);}
     }
+    .show{ display:block; animation: slideIn .8s ease forwards; }
+    .hide{ animation: slideOut .8s ease forwards; }
 
-    .show {
-      display: block;
-      animation: slideIn 0.8s ease forwards;
-    }
-
-    .hide {
-      animation: slideOut 0.8s ease forwards;
-    }
-
-    #hint {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #ffa722;
-      font-size: 24px;
-      font-weight: 700;
-      opacity: 0;
-      transition: opacity 0.5s;
-      text-shadow: 0 0 10px #ff8a50;
-    }
-
-    @media (max-width: 600px) {
-      #wish-popup {
-        font-size: 1.2rem;
-        padding: 16px 20px;
-        white-space: normal;
-        max-width: 80%;
-      }
+    #hint{
+      position: fixed; bottom:80px; left:50%; transform:translateX(-50%);
+      color:#ffa722; font-size:24px; font-weight:700; opacity:0; transition:.5s;
+      text-shadow:0 0 10px #ff8a50; z-index: 8;
     }
   </style>
 </head>
@@ -126,8 +70,13 @@
   <div class="stage">
     <canvas id="starfield"></canvas>
     <div class="moon"></div>
+
+    <!-- Đèn lồng -->
     <div id="lantern-container"></div>
-    <div id="wish-popup"></div>
+
+    <!-- Popup lời chúc -->
+    <div id="wish-popup" role="dialog" aria-live="polite"></div>
+
     <div id="hint">Chạm vào đèn trời</div>
 
     <audio id="bg-music" loop>
@@ -136,45 +85,76 @@
   </div>
 
   <script>
-    // --- Sao băng ---
+    // ===== Nền sao =====
     const canvas = document.getElementById("starfield");
     const ctx = canvas.getContext("2d");
-    let w, h, stars = [], meteors = [];
-
-    function resizeCanvas() {
+    let w,h,stars=[];
+    function resizeCanvas(){
       w = canvas.width = innerWidth;
       h = canvas.height = innerHeight;
       stars = [];
-      for (let i = 0; i < (w * h) / 2200; i++) {
-        stars.push({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          r: Math.random() * 1 + 0.2,
-          a: Math.random(),
-          t: Math.random() * 0.02 + 0.002
-        });
+      for(let i=0;i<(w*h)/2200;i++){
+        stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1+0.2,a:Math.random(),t:Math.random()*0.02+0.002});
       }
     }
-    function drawStars() {
-      ctx.clearRect(0, 0, w, h);
-      for (let s of stars) {
-        s.a += (Math.random() > 0.5 ? 1 : -1) * s.t;
-        ctx.globalAlpha = s.a;
-        ctx.fillStyle = "#fff";
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fill();
+    function drawStars(){
+      ctx.clearRect(0,0,w,h);
+      for(const s of stars){
+        s.a += (Math.random()>0.5?1:-1)*s.t;
+        ctx.globalAlpha = Math.max(.05,Math.min(1,s.a));
+        ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
       }
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(drawStars);
     }
-    function loop() {
-      drawStars();
-      requestAnimationFrame(loop);
-    }
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-    loop();
+    resizeCanvas(); window.addEventListener("resize",resizeCanvas); drawStars();
 
-    // --- Lời chúc ---
+    // ===== Đèn lồng bay =====
+    const lanternContainer = document.getElementById("lantern-container");
+    function createLantern(){
+      const lantern = document.createElement("img");
+      lantern.src = "./den.png"; // đặt file den.png cạnh index.html
+      lantern.className = "lantern swing";
+
+      // 3 lớp sâu - kích thước, thời lượng, độ mờ khác nhau
+      const layer = Math.floor(Math.random()*3)+1;
+      let size=40, duration=10000, opacity=.8;
+      if(layer===1){ size=20+Math.random()*20; duration=14000+Math.random()*5000; opacity=.5; }
+      else if(layer===2){ size=30+Math.random()*30; duration=12000+Math.random()*4000; opacity=.7; }
+      else { size=40+Math.random()*40; duration=10000+Math.random()*3000; opacity=.95; }
+
+      lantern.style.width = size+"px";
+      lantern.style.left = Math.random()*90 + "vw";
+      lantern.style.bottom = "0px";
+      lantern.style.opacity = opacity;
+      lanternContainer.appendChild(lantern);
+
+      const drift = Math.random()*140 - 70;  // trôi ngang
+      const up = 120 + Math.random()*40;     // bay lên cao
+      lantern.animate(
+        [{transform:"translate(0,0)", opacity:opacity},{transform:`translate(${drift}px, -${up}vh)`, opacity:0}],
+        {duration, easing:"linear", fill:"forwards"}
+      );
+      setTimeout(()=>lantern.remove(), duration);
+    }
+    setInterval(createLantern, 500);
+
+    // ===== Nhạc nền (chạm để phát) =====
+    const bg = document.getElementById("bg-music");
+    const hint = document.getElementById("hint");
+    let musicStarted=false;
+    document.addEventListener("pointerdown", function startMusicOnce(){
+      if(!musicStarted && bg){
+        bg.volume=0;
+        bg.play().then(()=>{
+          let v=0; const fade=setInterval(()=>{ v+=.05; if(v>=.9){v=.9; clearInterval(fade);} bg.volume=v; },120);
+          musicStarted=true;
+        }).catch(()=>{});
+      }
+      document.removeEventListener("pointerdown", startMusicOnce);
+    });
+
+    // ===== Lời chúc: 2s/câu, hết thì dừng =====
     const wishes = [
       "Chúc bạn Nhi Trung Thu ấm áp, hạnh phúc!",
       "Chúc gia đình bạn đoàn viên, vui vẻ!",
@@ -182,32 +162,43 @@
       "Chúc bạn luôn sáng như trăng rằm!",
       "Mong ước thành hiện thực nhé!"
     ];
-
     const popup = document.getElementById("wish-popup");
-    let index = 0;
+    let idx = 0, timer = null;
 
-    function showNextWish() {
-      if (index >= wishes.length) return; // dừng nếu hết lời chúc
-
-      popup.classList.remove("hide");
-      popup.classList.add("show");
-      popup.textContent = wishes[index];
-      popup.style.display = "block";
-
-      // sau 1.8s ẩn đi
-      setTimeout(() => {
+    function showNextWish(){
+      if(idx >= wishes.length){
+        // Ẩn dần popup rồi dừng hẳn
         popup.classList.remove("show");
         popup.classList.add("hide");
-      }, 1800);
-
-      index++;
-      if (index < wishes.length) {
-        setTimeout(showNextWish, 2000);
+        popup.addEventListener("animationend", ()=>{ popup.style.display="none"; }, {once:true});
+        clearInterval(timer);
+        return;
+      }
+      // chuyển cảnh: out -> đổi text -> in
+      popup.classList.remove("hide");
+      if(popup.textContent){
+        popup.classList.add("hide");
+        popup.addEventListener("animationend", function onOut(){
+          popup.removeEventListener("animationend", onOut);
+          popup.textContent = wishes[idx++];
+          popup.classList.remove("hide");
+          popup.classList.add("show");
+        }, {once:true});
+      }else{
+        popup.style.display="block";
+        popup.textContent = wishes[idx++];
+        popup.classList.add("show");
       }
     }
 
-    // tự khởi động sau 2s
-    setTimeout(showNextWish, 2000);
+    // Bắt đầu sau 2s, rồi 2s đổi 1 câu, đến hết thì dừng
+    setTimeout(()=>{
+      showNextWish();                   // câu đầu
+      timer = setInterval(showNextWish, 2000);
+    }, 2000);
+
+    // Hint xuất hiện rồi mờ
+    setTimeout(()=>{ hint.style.opacity="1"; setTimeout(()=>hint.style.opacity="0", 5000); }, 1000);
   </script>
 </body>
 </html>
