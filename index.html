@@ -1,18 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="vi">
 
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Cho nè</title>
+  <title>Thiệp Trung Thu 💖</title>
   <link href="https://fonts.googleapis.com/css2?family=Mali:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root { --accent:#ff7f50; --accent-2:#ff5722; }
 
     html, body {
-      height: 100%; margin: 0;
+      height: 100%;
+      margin: 0;
       font-family: "Mali", cursive;
-      background: #060614; overflow: hidden;
+      background: #060614;
+      overflow: hidden;
     }
 
     .stage { position: relative; min-height: 100vh; overflow: hidden; }
@@ -35,18 +37,20 @@
     @keyframes swing{ 0%{transform:rotate(-5deg)} 50%{transform:rotate(5deg)} 100%{transform:rotate(-5deg)} }
     .swing{ animation: swing 2s ease-in-out infinite; }
 
-    /* Popup lời chúc */
+    /* Popup lời chúc (đã bỏ nền trắng) */
     #wish-popup{
       position: fixed; top: 55%; left: 50%;
       transform: translate(-50%,-50%);
-      background: rgba(255,255,255,.96);
-      color:#ff8d22; padding: 25px 35px; border-radius: 18px;
+      background: transparent;
+      color:#ffb347;
+      padding: 25px 35px; border-radius: 18px;
       font-size:1.8rem; font-weight:700; display:none; z-index:9999;
       text-align:center; white-space:nowrap;
-      text-shadow: 0 0 12px #ffd180;
-      box-shadow: 0 0 25px #ff8a50, 0 0 35px #ffd180;
+      text-shadow: 0 0 20px #ffd180, 0 0 40px #ff8a50;
     }
-    @media (max-width:600px){ #wish-popup{font-size:1.2rem; padding:16px 20px; white-space:normal; max-width:85%;} }
+    @media (max-width:600px){
+      #wish-popup{font-size:1.2rem; padding:16px 20px; white-space:normal; max-width:85%;}
+    }
 
     @keyframes slideIn{
       0%{opacity:0; transform: translate(-50%,-30px);}
@@ -175,14 +179,13 @@
     });
 
     // ===== Lời chúc chính =====
-   const wishes = [
-  "🌕 Chúc bạn Nhi có Trung Thu thật ấm áp và vui vẻ.",
-  "🏮 Chúc gia đình bạn luôn sum vầy, hạnh phúc.",
-  "🍰 Mong mùa trăng mang đến cho bạn nhiều bình an và ngọt ngào.",
-  "✨ Chúc bạn Nhi luôn rạng rỡ và mọi điều mong muốn đều thành hiện thực nhaa",
-  "Yêu Bạng💖"
-];
-
+    const wishes = [
+      "🌕 Chúc bạn Nhi có Trung Thu thật ấm áp và vui vẻ.",
+      "🏮 Chúc gia đình bạn luôn sum vầy, hạnh phúc.",
+      "🍰 Mong mùa trăng mang đến cho bạn nhiều bình an và ngọt ngào.",
+      "✨ Chúc bạn Nhi luôn rạng rỡ và mọi điều mong muốn đều thành hiện thực nhaa",
+      "Yêu Bạng💖"
+    ];
     const popup = document.getElementById("wish-popup");
     const goodnight = document.getElementById("goodnight");
     let idx = 0, timer = null;
@@ -217,7 +220,7 @@
 
     setTimeout(()=>{
       showNextWish();
-      timer = setInterval(showNextWish, 2000);
+      timer = setInterval(showNextWish, 3000); // chạy 3s/lời chúc
     }, 2000);
 
     // Hint xuất hiện rồi mờ dần
@@ -225,4 +228,3 @@
   </script>
 </body>
 </html>
-
