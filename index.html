@@ -14,8 +14,7 @@
             --accent-2: #ff5722;
         }
 
-        html,
-        body {
+        html, body {
             height: 100%;
             margin: 0;
             font-family: "Mali", cursive;
@@ -47,7 +46,7 @@
             box-shadow:
                 0 0 50px #ffffff7a,
                 0 0 80px rgba(255, 255, 255, 0.7),
-                0 0 100ox rgba(255, 255, 255, 0.4);
+                0 0 100px rgba(255, 255, 255, 0.4); /* fix 100ox -> 100px */
             filter: drop-shadow(0 0 25px rgba(255, 255, 200, 0.8));
             animation: moonGlow 6s ease-in-out infinite;
             z-index: 10;
@@ -60,7 +59,6 @@
                 width: 70px;
                 height: 70px;
             }
-
         }
 
         #lantern-container {
@@ -82,22 +80,11 @@
         }
 
         @keyframes swing {
-            0% {
-                transform: rotate(-5deg);
-            }
-
-            50% {
-                transform: rotate(5deg);
-            }
-
-            100% {
-                transform: rotate(-5deg);
-            }
+            0% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+            100% { transform: rotate(-5deg); }
         }
-
-        .swing {
-            animation: swing 2s ease-in-out infinite;
-        }
+        .swing { animation: swing 2s ease-in-out infinite; }
 
         #hint {
             position: fixed;
@@ -119,7 +106,6 @@
             text-shadow:
                 0 0 15px #ff8a50,
                 0 0 20px #ffd180;
-
         }
 
         @media (max-width: 600px) {
@@ -140,19 +126,18 @@
             border-radius: 12px;
             font-size: 1.8rem;
             font-weight: 700;
-            display: none;
+            display: none; /* sẽ bật lên tự động bằng JS */
             z-index: 9999;
-            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.35);
             text-align: center;
             max-width: 60%;
             width: auto;
             box-sizing: border-box;
             pointer-events: auto;
-            text-shadow:
-                0 0 25px #ffd180;
+            text-shadow: 0 0 25px #ffd180;
             box-shadow:
                 0 0 20px #ff8a50,
                 0 0 25px #ffd180;
+            transition: opacity .35s ease;
         }
 
         @media (max-width: 600px) {
@@ -220,10 +205,8 @@
             <!-- <img src="./ass.png" alt="Trang trí Trung Thu" /> -->
         </div>
 
-        <!-- Sử phần hướng dẫn ở đây -->
         <div id="hint">Chạm vào đèn trời</div>
 
-        <!-- Nhạc sửa nhạc nền -->
         <audio id="bg-music" loop>
             <source src="a.mp3" type="audio/mp3">
             Trình duyệt của bạn không hỗ trợ thẻ audio.
@@ -316,7 +299,6 @@
 
         // ===== Đèn lồng và lời chúc =====
         const lanternContainer = document.getElementById("lantern-container");
-        //Sử lời chúc ở đây
         const wishes = [
             "Chúc bạn Nhi Trung Thu ấm áp, hạnh phúc!",
             "Chúc gia đình bạn đoàn viên, vui vẻ!",
@@ -327,8 +309,7 @@
 
         function createLantern() {
             const lantern = document.createElement("img");
-            // sửa đèn lồng ở đây
-            lantern.src = "./den.png";
+            lantern.src = "./den.png"; // ảnh đèn lồng
             lantern.className = "lantern swing";
 
             const layer = Math.floor(Math.random() * 3) + 1;
@@ -367,12 +348,8 @@
 
             setTimeout(() => lantern.remove(), duration);
 
-            lantern.addEventListener("click", (e) => {
-                e.stopPropagation();
-                const wishPopup = document.getElementById("wish-popup");
-                wishPopup.textContent = wishes[Math.floor(Math.random() * wishes.length)];
-                wishPopup.style.display = "block";
-            });
+            // BỎ cơ chế click để hiện lời chúc (đã chuyển sang auto)
+            // lantern.addEventListener("click", ...)
         }
 
         setInterval(createLantern, 500);
@@ -384,7 +361,6 @@
 
         document.addEventListener("pointerdown", function startMusicOnce() {
             if (!musicStarted && bg) {
-
                 bg.volume = 0;
                 bg.play().then(() => {
                     let v = 0;
@@ -406,49 +382,39 @@
             document.removeEventListener("pointerdown", startMusicOnce);
         });
 
-        // ===== Ẩn popup khi click ngoài =====
-        document.addEventListener("click", (e) => {
-            const pop = document.getElementById("wish-popup");
-            if (pop && pop.style.display === "block") {
-                pop.style.display = "none";
-            }
-        });
+        // ===== TỰ ĐỘNG CHẠY LỜI CHÚC: 2s / dòng, lặp vô hạn =====
+        const wishPopup = document.getElementById("wish-popup");
+        let wishIndex = 0;
 
-        document.addEventListener("pointerdown", function startMusicOnce() {
-            if (!musicStarted && bg) {
-                bg.volume = 0;
-                bg.play().then(() => {
-                    let v = 0;
-                    const fadeIn = setInterval(() => {
-                        v += 0.05;
-                        if (v >= 0.9) {
-                            v = 0.9;
-                            clearInterval(fadeIn);
-                        }
-                        bg.volume = v;
-                    }, 120);
-                    musicStarted = true;
-                }).catch((e) => {
-                    console.log("Không thể phát nhạc:", e);
-                });
+        function cycleWishes() {
+            // hiện popup nếu đang ẩn
+            if (wishPopup.style.display !== "block") {
+                wishPopup.style.display = "block";
+                wishPopup.style.opacity = "0";
+                // nhỏ delay để bật transition mượt
+                requestAnimationFrame(() => { wishPopup.style.opacity = "1"; });
             }
-            document.removeEventListener("pointerdown", startMusicOnce);
-        });
+            wishPopup.textContent = wishes[wishIndex];
+            wishIndex = (wishIndex + 1) % wishes.length;
+        }
 
+        // bắt đầu sau 2s, rồi cứ 2s đổi câu
+        setTimeout(() => {
+            cycleWishes();
+            setInterval(cycleWishes, 2000);
+        }, 2000);
+
+        // (BỎ) Ẩn popup khi click ngoài — để auto không bị gián đoạn
+        // document.addEventListener("click", ...)
+
+        // Hint xuất hiện một lần
         setTimeout(() => {
             if (hint) {
                 hint.style.opacity = "1";
+                setTimeout(() => { hint.style.opacity = "0"; }, 5000);
             }
-
-            setTimeout(() => {
-                if (hint) {
-                    hint.style.opacity = "0";
-                }
-            }, 5000);
         }, 1000);
     </script>
 
 </body>
-
-
 </html>
