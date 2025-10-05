@@ -37,7 +37,7 @@
     @keyframes swing{ 0%{transform:rotate(-5deg)} 50%{transform:rotate(5deg)} 100%{transform:rotate(-5deg)} }
     .swing{ animation: swing 2s ease-in-out infinite; }
 
-    /* Popup lời chúc (đã bỏ nền trắng) */
+    /* Popup lời chúc */
     #wish-popup{
       position: fixed; top: 55%; left: 50%;
       transform: translate(-50%,-50%);
@@ -196,7 +196,7 @@
         popup.classList.add("hide");
         popup.addEventListener("animationend", ()=>{
           popup.style.display="none";
-          // sau 3s hiện dòng chúc ngủ ngon
+          // chờ 3s sau khi popup biến mất hoàn toàn mới hiện lời chúc ngủ ngon
           setTimeout(()=>{ goodnight.style.opacity = "1"; }, 3000);
         }, {once:true});
         clearInterval(timer);
@@ -220,7 +220,7 @@
 
     setTimeout(()=>{
       showNextWish();
-      timer = setInterval(showNextWish, 3000); // chạy 3s/lời chúc
+      timer = setInterval(showNextWish, 3000); // 3s mỗi lời chúc
     }, 2000);
 
     // Hint xuất hiện rồi mờ dần
