@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="vi">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -20,6 +19,7 @@
     .stage { position: relative; min-height: 100vh; overflow: hidden; }
     canvas#starfield { display:block; width:100%; height:100%; }
 
+    /* 🌕 Mặt trăng */
     .moon {
       position: absolute; top: 60px; right: 100px;
       width: 160px; height: 160px; border-radius: 50%;
@@ -28,7 +28,7 @@
     }
     @media (max-width:600px){ .moon{top:40px; right:14px; width:70px; height:70px;} }
 
-    /* Đèn lồng */
+    /* 🏮 Đèn lồng */
     #lantern-container{
       position: fixed; inset:0;
       pointer-events: none; overflow: hidden; z-index: 9;
@@ -37,7 +37,7 @@
     @keyframes swing{ 0%{transform:rotate(-5deg)} 50%{transform:rotate(5deg)} 100%{transform:rotate(-5deg)} }
     .swing{ animation: swing 2s ease-in-out infinite; }
 
-    /* Popup lời chúc */
+    /* 💬 Popup lời chúc */
     #wish-popup{
       position: fixed; top: 55%; left: 50%;
       transform: translate(-50%,-50%);
@@ -69,7 +69,7 @@
       text-shadow:0 0 10px #ff8a50; z-index: 8;
     }
 
-    /* Lời chúc cuối "Ngủ ngon" */
+    /* 🌙 Lời chúc cuối */
     #goodnight {
       position: fixed;
       top: 60%;
@@ -88,6 +88,35 @@
       0% { transform: translate(-50%, -52%); }
       100% { transform: translate(-50%, -48%); }
     }
+
+    /* 🐙 GitHub-style icon bar */
+    #github-bar {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      align-items: center;
+      background: #1e1e1e;
+      border-radius: 20px;
+      padding: 6px 12px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.15);
+      color: #ccc;
+      font-size: 14px;
+      z-index: 99999;
+      opacity: 0.9;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    #github-bar:hover {
+      opacity: 1;
+      box-shadow: 0 0 15px rgba(255,255,255,0.25);
+    }
+    #github-bar img {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+      filter: invert(1);
+    }
   </style>
 </head>
 
@@ -95,6 +124,12 @@
   <div class="stage">
     <canvas id="starfield"></canvas>
     <div class="moon"></div>
+
+    <!-- 🔹 Icon bar giống GitHub -->
+    <div id="github-bar" onclick="openGithub()">
+      <img src="./globe.png" alt="globe" />
+      Editing N-Trung-Thu/index.html
+    </div>
 
     <!-- Đèn lồng -->
     <div id="lantern-container"></div>
@@ -178,13 +213,13 @@
       document.removeEventListener("pointerdown", startMusicOnce);
     });
 
-    // ===== Lời chúc chính =====
+    // ===== Lời chúc =====
     const wishes = [
-      "🌕 Chúc bạn Nhi có Trung Thu thật bình yên và nhẹ lòng nha.",
-"🏮 Mong gia đình bạn luôn ấm áp, sum vầy và là nơi bạn thấy bình yên nhất.",
-"🍰 Dù hôm nay có buồn, mong ánh trăng mang đến cho bạn sự dịu dàng và an yên.",
-"✨ Chúc bạn sớm mỉm cười lại và cảm nhận được nhiều yêu thương hơn.",
-"Yêu Bạnggg 💖"
+      "🌕 Chúc Nhi có Trung Thu thật bình yên và nhẹ lòng nha.",
+      "🏮 Mong gia đình bạn luôn ấm áp, sum vầy và hạnh phúc.",
+      "🍰 Dù hôm nay có buồn, mong ánh trăng mang đến cho bạn sự dịu dàng và an yên.",
+      "✨ Chúc bạn sớm mỉm cười lại và cảm nhận được nhiều yêu thương hơn nha.",
+      "Yêu Bạnggg 💖"
     ];
     const popup = document.getElementById("wish-popup");
     const goodnight = document.getElementById("goodnight");
@@ -196,7 +231,6 @@
         popup.classList.add("hide");
         popup.addEventListener("animationend", ()=>{
           popup.style.display="none";
-          // chờ 3s sau khi popup biến mất hoàn toàn mới hiện lời chúc ngủ ngon
           setTimeout(()=>{ goodnight.style.opacity = "1"; }, 3000);
         }, {once:true});
         clearInterval(timer);
@@ -220,13 +254,19 @@
 
     setTimeout(()=>{
       showNextWish();
-      timer = setInterval(showNextWish, 4000); // 4s mỗi lời chúc
+      timer = setInterval(showNextWish, 4000);
     }, 2000);
 
-    // Hint xuất hiện rồi mờ dần
     setTimeout(()=>{ hint.style.opacity="1"; setTimeout(()=>hint.style.opacity="0", 5000); }, 1000);
+
+    // ===== Nút GitHub click =====
+    function openGithub(){
+      showNextWish(); // click đổi lời chúc tiếp
+      if(!musicStarted){
+        bg.play().catch(()=>{});
+        musicStarted=true;
+      }
+    }
   </script>
 </body>
 </html>
-
-
