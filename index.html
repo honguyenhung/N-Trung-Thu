@@ -74,9 +74,9 @@
     }
 
     /* Lời chúc cuối "Ngủ ngon" */
-    #goodnight {
+    #goodnight,
+    #check-msg {
       position: fixed;
-      top: 60%;
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: 2rem;
@@ -88,6 +88,10 @@
       transition: opacity 1.2s ease;
       animation: floaty 3s ease-in-out infinite alternate;
     }
+    #goodnight { top: 60%; }
+    /* Dòng nhắc kiểm tra tài khoản – xuất hiện bên dưới một chút */
+    #check-msg { top: 68%; }
+
     @keyframes floaty {
       0% { transform: translate(-50%, -52%); }
       100% { transform: translate(-50%, -48%); }
@@ -108,6 +112,8 @@
 
     <!-- Lời chúc kết -->
     <div id="goodnight">💤 Chúc bạn yêu ngủ ngon nhaaa 💖</div>
+    <!-- Dòng nhắc sau lời chúc ngủ ngon -->
+    <div id="check-msg">💬 Bạn kiểm tra tài khoản đi =)))</div>
 
     <div id="hint">Chào Bạng Nhoaaaa</div>
 
@@ -192,6 +198,7 @@
     ];
     const popup = document.getElementById("wish-popup");
     const goodnight = document.getElementById("goodnight");
+    const checkMsg = document.getElementById("check-msg");
     let idx = 0, timer = null;
 
     function showNextWish(){
@@ -200,7 +207,14 @@
         popup.classList.add("hide");
         popup.addEventListener("animationend", ()=>{
           popup.style.display="none";
-          setTimeout(()=>{ goodnight.style.opacity = "1"; }, 3000);
+          // Hiện "Ngủ ngon"
+          setTimeout(()=>{
+            goodnight.style.opacity = "1";
+            // Sau đó hiện "Bạn kiểm tra tài khoản đi =)))"
+            setTimeout(()=>{
+              checkMsg.style.opacity = "1";
+            }, 2200); // xuất hiện sau khi "ngủ ngon" đã hiện một chút
+          }, 3000);
         }, {once:true});
         clearInterval(timer);
         return;
