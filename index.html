@@ -29,6 +29,15 @@
     }
     @media (max-width:600px){ .moon{top:40px; right:14px; width:70px; height:70px;} }
 
+    /* Đèn lồng */
+    #lantern-container{
+      position: fixed; inset:0;
+      pointer-events: none; overflow: hidden; z-index: 9;
+    }
+    .lantern{ position:absolute; width:40px; user-select:none; pointer-events:auto; }
+    @keyframes swing{ 0%{transform:rotate(-5deg)} 50%{transform:rotate(5deg)} 100%{transform:rotate(-5deg)} }
+    .swing{ animation: swing 2s ease-in-out infinite; }
+
     /* Popup lời chúc */
     #wish-popup{
       position: fixed; top: 55%; left: 50%;
@@ -38,6 +47,7 @@
       font-size:1.8rem; font-weight:700; display:none;
       text-align:center;
       text-shadow: 0 0 20px #ffd180, 0 0 40px #ff8a50;
+      z-index:9999;
     }
 
     .show{ display:block; animation: slideIn .8s ease forwards; }
@@ -58,6 +68,7 @@
       font-weight: 700;
       transition: opacity 1.2s ease;
       animation: floaty 3s ease-in-out infinite alternate;
+      z-index: 9999;
     }
     #goodnight { top: 60%; }
     #check-msg { top: 68%; }
@@ -74,10 +85,15 @@
     <canvas id="starfield"></canvas>
     <div class="moon"></div>
 
+    <!-- Đèn lồng -->
+    <div id="lantern-container"></div>
+
+    <!-- Popup lời chúc -->
     <div id="wish-popup"></div>
 
+    <!-- Lời chúc kết -->
     <div id="goodnight">💤 Chúc bạn yêu ngủ ngon nhaaa 💖</div>
-    <div id="check-msg">💬 Bạn kiểm tra tài khoản đi hehehe =)))</div>
+    <div id="check-msg">💬 Bạn kiểm tra tài khoản đi =)))</div>
 
     <audio id="bg-music" loop>
       <source src="a.mp3" type="audio/mp3">
@@ -109,7 +125,47 @@
     }
     resizeCanvas(); window.addEventListener("resize",resizeCanvas); drawStars();
 
-    // ===== Lời chúc =====
+    // ===== Đèn lồng bay =====
+    const lanternContainer = document.getElementById("lantern-container");
+    function createLantern(){
+      const lantern = document.createElement("img");
+      lantern.src = "./den.png"; // hình đèn lồng
+      lantern.className = "lantern swing";
+      const layer = Math.floor(Math.random()*3)+1;
+      let size=40, duration=10000, opacity=.8;
+      if(layer===1){ size=20+Math.random()*20; duration=14000+Math.random()*5000; opacity=.5; }
+      else if(layer===2){ size=30+Math.random()*30; duration=12000+Math.random()*4000; opacity=.7; }
+      else { size=40+Math.random()*40; duration=10000+Math.random()*3000; opacity=.95; }
+      lantern.style.width = size+"px";
+      lantern.style.left = Math.random()*90 + "vw";
+      lantern.style.bottom = "0px";
+      lantern.style.opacity = opacity;
+      lanternContainer.appendChild(lantern);
+      const drift = Math.random()*140 - 70;
+      const up = 120 + Math.random()*40;
+      lantern.animate(
+        [{transform:"translate(0,0)", opacity:opacity},{transform:`translate(${drift}px, -${up}vh)`, opacity:0}],
+        {duration, easing:"linear", fill:"forwards"}
+      );
+      setTimeout(()=>lantern.remove(), duration);
+    }
+    setInterval(createLantern, 500);
+
+    // ===== Nhạc nền =====
+    const bg = document.getElementById("bg-music");
+    let musicStarted=false;
+    document.addEventListener("pointerdown", function startMusicOnce(){
+      if(!musicStarted && bg){
+        bg.volume=0;
+        bg.play().then(()=>{
+          let v=0; const fade=setInterval(()=>{ v+=.05; if(v>=.9){v=.9; clearInterval(fade);} bg.volume=v; },120);
+          musicStarted=true;
+        }).catch(()=>{});
+      }
+      document.removeEventListener("pointerdown", startMusicOnce);
+    });
+
+    // ===== Lời chúc chính =====
     const wishes = [
       "🌕 Chúc Nhi có Trung Thu thật bình yên và nhẹ lòng nha.",
       "🏮 Mong gia đình bạn luôn ấm áp, sum vầy và hạnh phúc.",
@@ -117,7 +173,6 @@
       "✨ Chúc bạn sớm mỉm cười lại và cảm nhận được nhiều yêu thương hơn nha.",
       "Yêu Bạnggg 💖"
     ];
-
     const popup = document.getElementById("wish-popup");
     const goodnight = document.getElementById("goodnight");
     const checkMsg = document.getElementById("check-msg");
@@ -130,9 +185,8 @@
         popup.addEventListener("animationend", ()=>{
           popup.style.display="none";
           setTimeout(()=>{
-            // hiện “Ngủ ngon”
             goodnight.style.opacity = "1";
-            // 2 giây sau mới hiện “Bạn kiểm tra tài khoản đi”
+            // 💬 xuất hiện 2 giây sau khi goodnight hiện
             setTimeout(()=>{
               checkMsg.style.opacity = "1";
             }, 2000);
@@ -164,4 +218,3 @@
   </script>
 </body>
 </html>
-
