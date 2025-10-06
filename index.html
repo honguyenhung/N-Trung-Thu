@@ -93,7 +93,7 @@
 
     <!-- Lời chúc kết -->
     <div id="goodnight">💤 Chúc bạn yêu ngủ ngon nhaaa 💖</div>
-    <div id="check-msg">💬 Bạn kiểm tra tài khoản đi =)))</div>
+    <div id="check-msg">💬 Bạn kiểm tra tài khoản đi hẹ hẹ hẹ =)))</div>
 
     <audio id="bg-music" loop>
       <source src="a.mp3" type="audio/mp3">
@@ -129,7 +129,7 @@
     const lanternContainer = document.getElementById("lantern-container");
     function createLantern(){
       const lantern = document.createElement("img");
-      lantern.src = "./den.png"; // hình đèn lồng
+      lantern.src = "./den.png";
       lantern.className = "lantern swing";
       const layer = Math.floor(Math.random()*3)+1;
       let size=40, duration=10000, opacity=.8;
@@ -165,7 +165,7 @@
       document.removeEventListener("pointerdown", startMusicOnce);
     });
 
-    // ===== Lời chúc chính =====
+    // ===== Lời chúc =====
     const wishes = [
       "🌕 Chúc Nhi có Trung Thu thật bình yên và nhẹ lòng nha.",
       "🏮 Mong gia đình bạn luôn ấm áp, sum vầy và hạnh phúc.",
@@ -173,6 +173,7 @@
       "✨ Chúc bạn sớm mỉm cười lại và cảm nhận được nhiều yêu thương hơn nha.",
       "Yêu Bạnggg 💖"
     ];
+
     const popup = document.getElementById("wish-popup");
     const goodnight = document.getElementById("goodnight");
     const checkMsg = document.getElementById("check-msg");
@@ -186,10 +187,10 @@
           popup.style.display="none";
           setTimeout(()=>{
             goodnight.style.opacity = "1";
-            // 💬 xuất hiện 2 giây sau khi goodnight hiện
+            // ⏳ Hiện dòng "Bạn kiểm tra tài khoản đi" sau 4 giây
             setTimeout(()=>{
               checkMsg.style.opacity = "1";
-            }, 2000);
+            }, 4000);
           }, 3000);
         }, {once:true});
         clearInterval(timer);
